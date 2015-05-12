@@ -39,7 +39,9 @@ SOURCES += main.cpp\
     decoration/decoration.cpp \
     manager/decorationmanager.cpp \
     manager/missionmanager.cpp \
-    mission.cpp
+    mission.cpp \
+    manager/manager.cpp \
+    spritepanel.cpp
 
 HEADERS  += mainwindow.h \
     frame.h \
@@ -68,7 +70,9 @@ HEADERS  += mainwindow.h \
     decoration/decoration.h \
     manager/decorationmanager.h \
     manager/missionmanager.h \
-    mission.h
+    mission.h \
+    manager/manager.h \
+    spritepanel.h
 
 FORMS    += mainwindow.ui
 

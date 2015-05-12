@@ -9,6 +9,7 @@
 #include<QImageReader>
 #include"skill/restore.h"
 #include"game.h"
+#include"manager/manager.h"
 //----------------------------Sprite------------------------------//
 
 Sprite::Sprite(const QString &worldName, const QString &name, GraphicsView* rec, QGraphicsItem * parent)
@@ -27,7 +28,7 @@ Sprite::Sprite(const QString &worldName, const QString &name, GraphicsView* rec,
 
     setViewReceiver(rec);
 
-    dragable=false;
+    dragable=true;
 }
 Sprite::~Sprite()
 {
@@ -59,6 +60,10 @@ bool Sprite::read(const QString &worldName, const QString &name)
 
 void Sprite::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+    if(isSelected())
+    {
+        painter->drawRect(boundingRect());
+    }
     stateBox[currState]->draw(painter,orientation,Game::instance()->getShowRects());
 }
 
@@ -121,7 +126,6 @@ void Sprite::setViewReceiver(GraphicsView *rec)
         connect(receiver,SIGNAL(keyPressed(QKeyEvent*)),this,SLOT(keyPressEvent(QKeyEvent*)));
         connect(receiver,SIGNAL(keyReleased(QKeyEvent*)),this,SLOT(keyReleaseEvent(QKeyEvent*)));
     }
-
 }
 
 void Sprite::update()
@@ -153,11 +157,18 @@ void Sprite::setDragable(bool d)
     setFlag(QGraphicsItem::ItemIsSelectable, d);
 }
 
+void Sprite::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    mouseOffset.setX(event->pos().x()/2-pos().x()/2);
+    mouseOffset.setY(event->pos().y()/2-pos().y()/2);
+}
+
 void Sprite::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if(dragable)
     {
-        this->setPos(event->scenePos().x()/2-this->getPixmapWidth()/4
-                     ,event->scenePos().y()/2-this->getPixmapHeight()/4);
+        this->setPos(event->scenePos().x()/2-mouseOffset.x()
+                     ,event->scenePos().y()/2-mouseOffset.y());
+
     }
 }

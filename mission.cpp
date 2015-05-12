@@ -21,9 +21,9 @@ Mission::~Mission()
 void Mission::start()
 {
     load();
-    Player* p=new Player("common","koakuma",Game::instance()->getView());
-    CharacterManager::instance()->addPlayer(p);
-    p->setPos(0,-100);
+    //Player* p=new Player("common","koakuma",Game::instance()->getView());
+    //CharacterManager::instance()->addPlayer(p);
+    //p->setPos(0,-100);
 }
 
 int Mission::run()

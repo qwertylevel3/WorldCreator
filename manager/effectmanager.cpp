@@ -55,13 +55,29 @@ void EffectManager::update()
     for(int i=0;i<allEffect.size();i++)
     {
         allEffect[i]->update();
+        if(!scene->sceneRect().contains(allEffect[i]->pos()))
+        {
+            scene->removeItem(allEffect[i]);
+            delete allEffect[i];
+            allEffect.removeAt(i);
+        }
+        if(allEffect[i]->scene()==0)
+        {
+            allEffect.removeAt(i);
+        }
     }
+}
+
+Sprite* EffectManager::add(Sprite *p)
+{
+    return addEffect(p->getName());
 }
 
 Effect* EffectManager::addEffect(const QString &name)
 {
     Effect* e=prototype[name]->clone();
     allEffect.push_back(e);
+    e->setManager(this);
     scene->addItem(e);
     return e;
 }

@@ -23,7 +23,9 @@ public:
     void setVy(double v){vy=v;}
     void setStable(bool s){stable=s;}
     void setType(Type t){type=t;}
+    void setOutOfScene(bool s){outOfScene=s;}
 
+    bool isOutOfScene(){return outOfScene;}
     double getWeight(){return weight;}
     double getVx(){return vx;}
     double getOldVx(){return oldVx;}
@@ -36,6 +38,7 @@ protected:
     double oldVx;//x上速度，先前状态,jump用
     double vy;//y上速度，向下为正
     bool stable;
+    bool outOfScene;
     Type type;
 };
 

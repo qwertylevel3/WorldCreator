@@ -7,16 +7,26 @@
 #include<QFileDialog>
 #include<QCloseEvent>
 #include"game.h"
+#include<QDebug>
+#include<QDockWidget>
+#include<QListWidget>
+#include"world.h"
+#include<QDialog>
+#include<QInputDialog>
+#include"spritepanel.h"
 
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    Game::instance()->init(QString("common"));
+    world=new World();
+    //world->init(QString("common"));
+    //Game::instance()->init(QString("common"));
 
     //QGraphicsView* view=new QGraphicsView();
-    this->setCentralWidget(Game::instance()->getView());
+    this->setCentralWidget(world->getView());
+    //this->setCentralWidget(world->getView());
     this->resize(1000,700);
 
     createActions();
@@ -24,14 +34,14 @@ MainWindow::MainWindow(QWidget *parent):
     createContextMenu();
     createToolBars();
     createStatusBar();
+    createDockWindow();
 
     readSettings();
 
     setWindowIcon(QIcon(":/images/icon.png"));
     setCurrentFile("");
 
-    Game::instance()->start();
-
+    connect(world,SIGNAL(modified()),this,SLOT(worldModified()));
 }
 
 
@@ -51,11 +61,24 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
-void MainWindow::newFile()
+void MainWindow::newWorld()
 {
     if (okToContinue()) {
-        //spreadsheet->clear();
-        setCurrentFile("");
+        world->clear();
+
+
+        bool ok;
+        QString fileName = QInputDialog::getText(this, tr("create new world"),
+                                             tr("world name:"), QLineEdit::Normal,
+                                             QDir::home().dirName(), &ok);
+        if (ok && !fileName.isEmpty())
+        {
+            world->createNewWorld(fileName);
+            qDebug()<<world->getWorldName();
+            setCurrentFile(world->getWorldName());
+            updateDockWindow();
+        }
+
     }
 }
 
@@ -64,31 +87,37 @@ void MainWindow::open()
     if (okToContinue()) {
         QString fileName = QFileDialog::getOpenFileName(this,
                                    tr("Open World"), ".",
-                                   tr("World files (*.wod)"));
+                                                        tr("World files (*.wod)"));
         if (!fileName.isEmpty())
+        {
             loadFile(fileName);
+            curFile=world->getWorldName();
+            updateDockWindow();
+        }
+
     }
+
+}
+
+void MainWindow::close()
+{
+    if(okToContinue())
+    {
+        world->close();
+        clearDockWindow();
+    }
+    setCurrentFile("");
 }
 
 bool MainWindow::save()
 {
-    if (curFile.isEmpty()) {
-        return saveAs();
-    } else {
+    if(curFile!="")
+    {
         return saveFile(curFile);
     }
+    return false;
 }
 
-bool MainWindow::saveAs()
-{
-    QString fileName = QFileDialog::getSaveFileName(this,
-                               tr("Save Spreadsheet"), ".",
-                               tr("Spreadsheet files (*.sp)"));
-    if (fileName.isEmpty())
-        return false;
-
-    return saveFile(fileName);
-}
 
 void MainWindow::about()
 {
@@ -106,7 +135,12 @@ void MainWindow::openRecentFile()
     if (okToContinue()) {
         QAction *action = qobject_cast<QAction *>(sender());
         if (action)
+        {
             loadFile(action->data().toString());
+            curFile=world->getWorldName();
+            updateDockWindow();
+        }
+
     }
 }
 
@@ -127,7 +161,7 @@ void MainWindow::createActions()
     newAction->setIcon(QIcon(":/images/new.png"));
     newAction->setShortcut(QKeySequence::New);
     newAction->setStatusTip(tr("Create a new world"));
-    connect(newAction, SIGNAL(triggered()), this, SLOT(newFile()));
+    connect(newAction, SIGNAL(triggered()), this, SLOT(newWorld()));
 
     openAction = new QAction(tr("&Open..."), this);
     openAction->setIcon(QIcon(":/images/open.png"));
@@ -141,10 +175,9 @@ void MainWindow::createActions()
     saveAction->setStatusTip(tr("Save the world to disk"));
     connect(saveAction, SIGNAL(triggered()), this, SLOT(save()));
 
-    saveAsAction = new QAction(tr("Save &As..."), this);
-    saveAsAction->setStatusTip(tr("Save the world under a new "
-                                  "name"));
-    connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+    closeAction=new QAction(tr("Close"),this);
+    closeAction->setStatusTip(tr("close the world"));
+    connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentFileActions[i] = new QAction(this);
@@ -158,42 +191,42 @@ void MainWindow::createActions()
     exitAction->setStatusTip(tr("Exit the application"));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
-//    cutAction = new QAction(tr("Cu&t"), this);
-//    cutAction->setIcon(QIcon(":/images/cut.png"));
-//    cutAction->setShortcut(QKeySequence::Cut);
-//    cutAction->setStatusTip(tr("Cut the current sprite "
-//                               "to the clipboard"));
-//    connect(cutAction, SIGNAL(triggered()), world, SLOT(cut()));
+    cutAction = new QAction(tr("Cu&t"), this);
+    cutAction->setIcon(QIcon(":/images/cut.png"));
+    cutAction->setShortcut(QKeySequence::Cut);
+    cutAction->setStatusTip(tr("Cut the current sprite "
+                               "to the clipboard"));
+    connect(cutAction, SIGNAL(triggered()), world, SLOT(cut()));
 
-//    copyAction = new QAction(tr("&Copy"), this);
-//    copyAction->setIcon(QIcon(":/images/copy.png"));
-//    copyAction->setShortcut(QKeySequence::Copy);
-//    copyAction->setStatusTip(tr("Copy the current sprite "
-//                                "to the clipboard"));
-//    connect(copyAction, SIGNAL(triggered()), world, SLOT(copy()));
+    copyAction = new QAction(tr("&Copy"), this);
+    copyAction->setIcon(QIcon(":/images/copy.png"));
+    copyAction->setShortcut(QKeySequence::Copy);
+    copyAction->setStatusTip(tr("Copy the current sprite "
+                                "to the clipboard"));
+    connect(copyAction, SIGNAL(triggered()), world, SLOT(copy()));
 
-//    pasteAction = new QAction(tr("&Paste"), this);
-//    pasteAction->setIcon(QIcon(":/images/paste.png"));
-//    pasteAction->setShortcut(QKeySequence::Paste);
-//    pasteAction->setStatusTip(tr("Paste the sprite into "
-//                                 "the current world"));
-//    connect(pasteAction, SIGNAL(triggered()),
-//            world, SLOT(paste()));
+    pasteAction = new QAction(tr("&Paste"), this);
+    pasteAction->setIcon(QIcon(":/images/paste.png"));
+    pasteAction->setShortcut(QKeySequence::Paste);
+    pasteAction->setStatusTip(tr("Paste the sprite into "
+                                 "the current world"));
+    connect(pasteAction, SIGNAL(triggered()),
+            world, SLOT(paste()));
 
-//    deleteAction = new QAction(tr("&Delete"), this);
-//    deleteAction->setShortcut(QKeySequence::Delete);
-//    deleteAction->setStatusTip(tr("Delete the current selection's sprite"));
+    deleteAction = new QAction(tr("&Delete"), this);
+    deleteAction->setShortcut(QKeySequence::Delete);
+    deleteAction->setStatusTip(tr("Delete the current selection's sprite"));
 
-//    connect(deleteAction, SIGNAL(triggered()),
-//            world, SLOT(del()));
+    connect(deleteAction, SIGNAL(triggered()),
+            world, SLOT(del()));
 
-//    showGridAction = new QAction(tr("&Show Grid"), this);
-//    showGridAction->setCheckable(true);
-//    showGridAction->setChecked(spreadsheet->showGrid());
-//    showGridAction->setStatusTip(tr("Show or hide the world's "
-//                                    "grid"));
-//    connect(showGridAction, SIGNAL(toggled(bool)),
-//            spreadsheet, SLOT(setShowGrid(bool)));
+    showGridAction = new QAction(tr("&Show Grid"), this);
+    showGridAction->setCheckable(true);
+    showGridAction->setChecked(world->showGrid());
+    showGridAction->setStatusTip(tr("Show or hide the world's "
+                                    "grid"));
+    connect(showGridAction, SIGNAL(toggled(bool)),
+            world, SLOT(setShowGrid(bool)));
 
 
     aboutAction = new QAction(tr("&About"), this);
@@ -211,18 +244,19 @@ void MainWindow::createMenus()
     fileMenu->addAction(newAction);
     fileMenu->addAction(openAction);
     fileMenu->addAction(saveAction);
-    fileMenu->addAction(saveAsAction);
     separatorAction = fileMenu->addSeparator();
     for (int i = 0; i < MaxRecentFiles; ++i)
         fileMenu->addAction(recentFileActions[i]);
     fileMenu->addSeparator();
+    fileMenu->addAction(closeAction);
+    fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
 
     editMenu = menuBar()->addMenu(tr("Edit(&E)"));
-//    editMenu->addAction(cutAction);
-//    editMenu->addAction(copyAction);
-//    editMenu->addAction(pasteAction);
-//    editMenu->addAction(deleteAction);
+    editMenu->addAction(cutAction);
+    editMenu->addAction(copyAction);
+    editMenu->addAction(pasteAction);
+    editMenu->addAction(deleteAction);
 
     editMenu->addSeparator();
 //    editMenu->addAction(findAction);
@@ -232,8 +266,6 @@ void MainWindow::createMenus()
 //    toolsMenu->addAction(recalculateAction);
 //    toolsMenu->addAction(sortAction);
     moduleMenu = menuBar()->addMenu(tr("Module(&M)"));
-
-    windowMenu = menuBar()->addMenu(tr("Window(&W)"));
 
     optionsMenu = menuBar()->addMenu(tr("Options(&O)"));
     //optionsMenu->addAction(showGridAction);
@@ -250,9 +282,9 @@ void MainWindow::createMenus()
 
 void MainWindow::createContextMenu()
 {
-//    spreadsheet->addAction(cutAction);
-//    spreadsheet->addAction(copyAction);
-//    spreadsheet->addAction(pasteAction);
+//    world->addAction(cutAction);
+//    world->addAction(copyAction);
+//    world->addAction(pasteAction);
     //spreadsheet->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
@@ -262,14 +294,15 @@ void MainWindow::createToolBars()
     fileToolBar->addAction(newAction);
     fileToolBar->addAction(openAction);
     fileToolBar->addAction(saveAction);
+    fileToolBar->setObjectName("fileToolBar");
 
     editToolBar = addToolBar(tr("&Edit"));
-//    editToolBar->addAction(cutAction);
-//    editToolBar->addAction(copyAction);
-//    editToolBar->addAction(pasteAction);
-//    editToolBar->addSeparator();
-//    editToolBar->addAction(findAction);
-//    editToolBar->addAction(goToCellAction);
+    editToolBar->addAction(cutAction);
+    editToolBar->addAction(copyAction);
+    editToolBar->addAction(pasteAction);
+    editToolBar->addSeparator();
+    editToolBar->setObjectName("editToolBar");
+
 }
 
 void MainWindow::createStatusBar()
@@ -285,14 +318,42 @@ void MainWindow::createStatusBar()
     updateStatusBar();
 }
 
+void MainWindow::createDockWindow()
+{
+    terrainWidget=new TerrainPanel(this);
+    characterWidget=new CharacterPanel(this);
+    decorationWidget=new DecorationPanel(this);
+
+
+    terrainDockWidget=new QDockWidget(tr("terrain"));
+    terrainDockWidget->setObjectName("terrain");
+    terrainDockWidget->setWidget(terrainWidget);
+    addDockWidget(Qt::RightDockWidgetArea,terrainDockWidget);
+
+    characterDockWidget=new QDockWidget(tr("character"));
+    characterDockWidget->setObjectName("character");
+    characterDockWidget->setWidget(characterWidget);
+    addDockWidget(Qt::RightDockWidgetArea,characterDockWidget);
+
+    decorationDockWidget=new QDockWidget(tr("decoration"));
+    decorationDockWidget->setObjectName("decoration");
+    decorationDockWidget->setWidget(decorationWidget);
+    addDockWidget(Qt::RightDockWidgetArea,decorationDockWidget);
+
+}
+
 void MainWindow::readSettings()
 {
     QSettings settings("qwertylevel3", "world");
 
+    settings.beginGroup("mainwindow");
     restoreGeometry(settings.value("geometry").toByteArray());
-
+    restoreState(settings.value("state").toByteArray());
     recentFiles = settings.value("recentFiles").toStringList();
+    settings.endGroup();
     updateRecentFileActions();
+
+
 
 //    bool showGrid = settings.value("showGrid", true).toBool();
 //    showGridAction->setChecked(showGrid);
@@ -305,8 +366,11 @@ void MainWindow::writeSettings()
 {
     QSettings settings("qwertylevel3", "world");
 
+    settings.beginGroup("mainwindow");
     settings.setValue("geometry", saveGeometry());
+    settings.setValue("state",saveState());
     settings.setValue("recentFiles", recentFiles);
+    settings.endGroup();
 //    settings.setValue("showGrid", showGridAction->isChecked());
 //    settings.setValue("autoRecalc", autoRecalcAction->isChecked());
 }
@@ -330,22 +394,24 @@ bool MainWindow::okToContinue()
 
 bool MainWindow::loadFile(const QString &fileName)
 {
-//    if (!spreadsheet->readFile(fileName)) {
-//        statusBar()->showMessage(tr("Loading canceled"), 2000);
-//        return false;
-//    }
+    if (!world->loadFile(fileName)) {
+        statusBar()->showMessage(tr("Loading canceled"), 2000);
+        return false;
+    }
 
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
+
+    this->setCentralWidget(world->getView());
     return true;
 }
 
 bool MainWindow::saveFile(const QString &fileName)
 {
-//    if (!spreadsheet->writeFile(fileName)) {
-//        statusBar()->showMessage(tr("Saving canceled"), 2000);
-//        return false;
-//    }
+    if (!world->writeFile(fileName)) {
+        statusBar()->showMessage(tr("Saving canceled"), 2000);
+        return false;
+    }
 
     setCurrentFile(fileName);
     statusBar()->showMessage(tr("File saved"), 2000);
@@ -357,15 +423,13 @@ void MainWindow::setCurrentFile(const QString &fileName)
     curFile = fileName;
     setWindowModified(false);
 
-    QString shownName = tr("Untitled");
     if (!curFile.isEmpty()) {
-        shownName = strippedName(curFile);
         recentFiles.removeAll(curFile);
         recentFiles.prepend(curFile);
         updateRecentFileActions();
     }
 
-    setWindowTitle(tr("%1[*] - %2").arg(shownName)
+    setWindowTitle(tr("%1[*] - %2").arg(curFile)
                                    .arg(tr("World")));
 }
 
@@ -395,4 +459,18 @@ void MainWindow::updateRecentFileActions()
 QString MainWindow::strippedName(const QString &fullFileName)
 {
     return QFileInfo(fullFileName).fileName();
+}
+
+void MainWindow::updateDockWindow()
+{
+    characterWidget->update();
+    terrainWidget->update();
+    decorationWidget->update();
+}
+
+void MainWindow::clearDockWindow()
+{
+    characterWidget->clear();
+    terrainWidget->clear();
+    decorationWidget->clear();
 }

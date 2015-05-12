@@ -21,6 +21,7 @@ void BulletManager::init(QGraphicsScene *s,const QString& worldName)
     scene=s;
     read(worldName);
 }
+
 bool BulletManager::read(const QString& worldName)
 {
     QString path=QDir::currentPath()
@@ -55,13 +56,30 @@ void BulletManager::update()
     for(int i=0;i<allBullet.size();i++)
     {
         allBullet[i]->update();
+        if(!scene->sceneRect().contains(allBullet[i]->pos()))
+        {
+            scene->removeItem(allBullet[i]);
+            delete allBullet[i];
+            allBullet.removeAt(i);
+        }
+        if(allBullet[i]->scene()==0)
+        {
+            allBullet.removeAt(i);
+        }
     }
 }
+
+Sprite *BulletManager::add(Sprite *p)
+{
+    return addBullet(p->getName());
+}
+
 
 //添加bullet，返回指针，便于修改
 Bullet *BulletManager::addBullet(const QString &name)
 {
     Bullet* b=prototype[name]->clone();
+    b->setManager(this);
     allBullet.push_back(b);
     scene->addItem(b);
     return b;

@@ -27,6 +27,7 @@ Decoration* Decoration::clone()
     p->setCurrSkill(0);
     p->setOrientation(1);
     p->setDragable(isDragable());
+    p->setName(name);
 
     for(int i=0;i<stateTotal;i++)
     {

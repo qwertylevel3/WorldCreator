@@ -6,12 +6,16 @@
 #include"decoration/decoration.h"
 #include<QList>
 #include<QMap>
+#include"manager/manager.h"
+#include<QObject>
 
-class DecorationManager:public Singleton<DecorationManager>
+class DecorationManager:public QObject,public Manager,public Singleton<DecorationManager>
 {
+    Q_OBJECT
 public:
     DecorationManager();
     ~DecorationManager();
+
     void init(QGraphicsScene* s,QString& worldName);
     bool read(QString& worldName);
     void update();
@@ -19,6 +23,10 @@ public:
     int getTotalNumber(){return allDecoration.size();}
     Decoration* addDecoration(const QString &name);
     void clear();
+    Sprite* add(Sprite *p);
+    QMap<QString,Decoration*>& getPrototype(){return prototype;}
+signals:
+    void selected(Sprite* p);
 protected:
     QList<Decoration*> allDecoration;
     QGraphicsScene* scene;

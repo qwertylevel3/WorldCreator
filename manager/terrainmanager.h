@@ -6,9 +6,12 @@
 #include"terrain/terrain.h"
 #include<QList>
 #include<QMap>
+#include"manager/manager.h"
+#include<QObject>
 
-class TerrainManager:public Singleton<TerrainManager>
+class TerrainManager:public QObject,public Singleton<TerrainManager>,public Manager
 {
+    Q_OBJECT
 public:
     TerrainManager();
     ~TerrainManager();
@@ -19,6 +22,10 @@ public:
     QList<Terrain*>& getAllTerrain(){return allTerrain;}
     int getTotalNumber(){return allTerrain.size();}
     Terrain* addTerrain(const QString& name);
+    Sprite* add(Sprite *p);
+    QMap<QString,Terrain*>& getPrototype(){return prototype;}
+signals:
+    void selected(Sprite* p);
 protected:
     QList<Terrain*> allTerrain;
     QGraphicsScene* scene;

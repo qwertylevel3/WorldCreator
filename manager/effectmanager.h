@@ -7,9 +7,12 @@
 #include"effect/effect.h"
 #include<QList>
 #include<QMap>
+#include"manager/manager.h"
+#include"QObject"
 
-class EffectManager:public Singleton<EffectManager>
+class EffectManager:public QObject,public Singleton<EffectManager>,public Manager
 {
+    Q_OBJECT
 public:
     EffectManager();
     ~EffectManager();
@@ -20,6 +23,7 @@ public:
     int getTotalNumber(){return allEffect.size();}
     Effect* addEffect(const QString& name);
     void clear();
+    Sprite* add(Sprite *p);
 protected:
     QList<Effect*> allEffect;
     QGraphicsScene* scene;

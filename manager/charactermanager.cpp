@@ -6,6 +6,8 @@
 #include<QDir>
 #include<QDebug>
 
+
+
 CharacterManager::CharacterManager()
 {
 
@@ -13,7 +15,7 @@ CharacterManager::CharacterManager()
 
 CharacterManager::~CharacterManager()
 {
-
+    delete p;
 }
 
 void CharacterManager::init(QGraphicsScene* s, QString &worldName)
@@ -56,13 +58,33 @@ void CharacterManager::update()
     for(int i=0;i<allCharacter.size();i++)
     {
         allCharacter[i]->update();
+        if(allCharacter[i]->isSelected())
+        {
+            emit selected(allCharacter[i]);
+        }
+        if(!scene->sceneRect().contains(allCharacter[i]->pos()))
+        {
+            allCharacter[i]->setOutOfScene(true);
+            allCharacter[i]->setVx(0);
+            allCharacter[i]->setVy(0);
+        }
+        if(allCharacter[i]->scene()==0)
+        {
+            allCharacter.removeAt(i);
+        }
     }
+}
+
+Sprite *CharacterManager::add(Sprite *p)
+{
+    return addCharacter(p->getName());
 }
 
 
 Character* CharacterManager::addCharacter(const QString& name)
 {
     Character* c=prototype[name]->clone();
+    c->setManager(this);
     scene->addItem(c);
     allCharacter.push_back(c);
     return c;
@@ -78,7 +100,7 @@ Player* CharacterManager::addPlayer(Player* p)
 
 void CharacterManager::clear()
 {
-    for(int i=1;i<allCharacter.size();i++)
+    for(int i=0;i<allCharacter.size();i++)
     {
         scene->removeItem(allCharacter[i]);
     }

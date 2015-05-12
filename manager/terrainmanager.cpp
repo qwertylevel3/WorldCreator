@@ -48,12 +48,24 @@ bool TerrainManager::read(QString &worldName)
     }
 }
 
+Sprite *TerrainManager::add(Sprite *p)
+{
+    return addTerrain(p->getName());
+}
 
 void TerrainManager::update()
 {
     for(int i=0;i<allTerrain.size();i++)
     {
         allTerrain[i]->update();
+        if(allTerrain[i]->isSelected())
+        {
+            emit selected(allTerrain[i]);
+        }
+        if(allTerrain[i]->scene()==0)
+        {
+            allTerrain.removeAt(i);
+        }
     }
 }
 
@@ -61,6 +73,7 @@ Terrain *TerrainManager::addTerrain(const QString &name)
 {
     Terrain* t=prototype[name]->clone();
     allTerrain.push_back(t);
+    t->setManager(this);
     scene->addItem(t);
     return t;
 }

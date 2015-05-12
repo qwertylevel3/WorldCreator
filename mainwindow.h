@@ -2,9 +2,14 @@
 #define MAINWINDOW_H
 
 #include<QMainWindow>
-#include"game.h"
 
+class World;
 class QLabel;
+class QListWidget;
+class QDockWidget;
+class CharacterPanel;
+class TerrainPanel;
+class DecorationPanel;
 
 namespace Ui {
 class MainWindow;
@@ -18,16 +23,28 @@ public:
     ~MainWindow();
 private:
     Ui::MainWindow *ui;
+    World* world;
+    TerrainPanel* terrainWidget;
+    CharacterPanel* characterWidget;
+    DecorationPanel* decorationWidget;
+    QDockWidget* terrainDockWidget;
+    QDockWidget* characterDockWidget;
+    QDockWidget* decorationDockWidget;
+
+
     void closeEvent(QCloseEvent *event);
-    void worldModified();
+
 
     QString strippedName(const QString &fullFileName);
 
+    void updateDockWindow();
+    void clearDockWindow();
     void createActions();
     void createMenus();
     void createContextMenu();
     void createToolBars();
     void createStatusBar();
+    void createDockWindow();
     void readSettings();
     void writeSettings();
     bool okToContinue();
@@ -57,17 +74,24 @@ private:
     QAction *newAction;
     QAction *openAction;
     QAction *saveAction;
-    QAction *saveAsAction;
     QAction *exitAction;
+    QAction* cutAction;
+    QAction* pasteAction;
+    QAction* deleteAction;
+    QAction* copyAction;
+    QAction* closeAction;
+
+
 
     QAction *showGridAction;
     QAction *aboutAction;
     QAction *aboutQtAction;
 private slots:
-    void newFile();
+    void worldModified();
+    void newWorld();
     void open();
+    void close();
     bool save();
-    bool saveAs();
     void about();
     void openRecentFile();
     void updateStatusBar();

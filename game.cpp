@@ -22,6 +22,7 @@ GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent)
     scaleFactor=1;
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 
 void GraphicsView::wheelEvent(QWheelEvent *event)
@@ -47,6 +48,8 @@ void GraphicsView::resizeEvent(QResizeEvent *)
 
 }
 
+
+
 //----------------------------Game------------------------------//
 
 
@@ -70,9 +73,10 @@ bool Game::init(const QString& worldName)
     G=200;
     T=0.05;
 
-    showRects=false;
+    showRects=true;
 
     scene=new QGraphicsScene;
+    scene->setSceneRect(-500,-500,2000,1000);
     view=new GraphicsView();
     view->setScene(scene);
 
@@ -170,46 +174,49 @@ void Game::simulation()
 
     for(int i=0;i<allCharacter.size();i++)
     {
-
-        //纵向检测
-        double V=allCharacter[i]->getVy();
-        allCharacter[i]->setVy(allCharacter[i]->getVy()+G*T);
-        allCharacter[i]->setY(G*T*T/2+V*T+allCharacter[i]->pos().y());
-
-        bool flag=false;
-        for(int j=0;j<allTerrain.size();j++)
+        if(!allCharacter[i]->isOutOfScene())
         {
-            if(isCollision(allCharacter[i],allTerrain[j]))
+            //纵向检测
+            double V=allCharacter[i]->getVy();
+            allCharacter[i]->setVy(allCharacter[i]->getVy()+G*T);
+            allCharacter[i]->setY(G*T*T/2+V*T+allCharacter[i]->pos().y());
+
+            bool flag=false;
+            for(int j=0;j<allTerrain.size();j++)
             {
-                flag=true;
-                break;
+                if(isCollision(allCharacter[i],allTerrain[j]))
+                {
+                    flag=true;
+                    break;
+                }
             }
-        }
-        if(flag)//碰撞
-        {
-
-            allCharacter[i]->setY(allCharacter[i]->pos().y()-G*T*T/2-V*T);
-            allCharacter[i]->setStable(true);//不稳定态结束//跳跃用...
-            allCharacter[i]->setVy(0);
-        }
-
-        //横向检测
-        flag=false;
-        allCharacter[i]->setPos(allCharacter[i]->pos().x()+allCharacter[i]->getVx()
-                       ,allCharacter[i]->pos().y());
-        for(int j=0;j<allTerrain.size();j++)
-        {
-            if(isCollision(allCharacter[i],allTerrain[j]))
+            if(flag)//碰撞
             {
-                flag=true;
-                break;
+
+                allCharacter[i]->setY(allCharacter[i]->pos().y()-G*T*T/2-V*T);
+                allCharacter[i]->setStable(true);//不稳定态结束//跳跃用...
+                allCharacter[i]->setVy(0);
             }
-        }
-        if(flag)
-        {
-            allCharacter[i]->setPos(allCharacter[i]->pos().x()-(allCharacter[i]->getVx())
+
+            //横向检测
+            flag=false;
+            allCharacter[i]->setPos(allCharacter[i]->pos().x()+allCharacter[i]->getVx()
                            ,allCharacter[i]->pos().y());
+            for(int j=0;j<allTerrain.size();j++)
+            {
+                if(isCollision(allCharacter[i],allTerrain[j]))
+                {
+                    flag=true;
+                    break;
+                }
+            }
+            if(flag)
+            {
+                allCharacter[i]->setPos(allCharacter[i]->pos().x()-(allCharacter[i]->getVx())
+                               ,allCharacter[i]->pos().y());
+            }
         }
+
     }
 }
 

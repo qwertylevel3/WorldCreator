@@ -8,6 +8,7 @@
 
 class Skill;
 class GraphicsView;
+class Manager;
 
 //----------------------------Sprite------------------------------//
 
@@ -15,7 +16,6 @@ class Sprite : public QGraphicsObject
 {
     Q_OBJECT
 public:
-
     Sprite(const QString &worldName,const QString &name,GraphicsView* rec=0,QGraphicsItem * parent = 0);
     ~Sprite();
 
@@ -29,7 +29,9 @@ public:
     void setViewReceiver(GraphicsView* rec);
     void setDragable(bool d);
     void setName(QString n){name=n;}
+    void setManager(Manager* p){manager=p;}
 
+    Manager* getManager(){return manager;}
     QString getName(){return name;}
     int getOrientation(){return orientation;}
     int getCureState(){return currState;}
@@ -37,6 +39,7 @@ public:
     State* getState(int index){return stateBox[index];}
     QVector<QRectF>& getRects(){return stateBox[currState]->getRects();}
 
+    QPixmap getPixmap(){return stateBox[currState]->getPixmap();}
     int getPixmapWidth(){return stateBox[currState]->getPixmapWidth();}
     int getPixmapHeight(){return stateBox[currState]->getPixmapHeight();}
     bool isDragable(){return dragable;}
@@ -53,10 +56,14 @@ public slots:
     QRectF boundingRect() const;
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent* event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent * event);
 protected:
     Sprite(){}
+    QPoint mouseOffset;
     QString name;
+    Manager* manager;
+
     bool dragable;
     int stateTotal;
     int currState;

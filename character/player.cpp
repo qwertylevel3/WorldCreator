@@ -19,6 +19,8 @@ Player::Player(const QString &worldName, const QString &name, GraphicsView *rec,
     inputModule->setSkill(InputModule::right,1);
     inputModule->setSkill(InputModule::D_C,2);
     inputModule->setSkill(InputModule::A_C,4);
+
+    setDragable(true);
 }
 
 Player::~Player()

@@ -7,9 +7,9 @@
 #include<QList>
 #include<QMap>
 #include"bullet/bullet.h"
+#include"manager/manager.h"
 
-
-class BulletManager:public Singleton<BulletManager>
+class BulletManager:public Singleton<BulletManager>,public Manager
 {
 public:
     BulletManager();
@@ -21,6 +21,7 @@ public:
     int getTotalNumber(){return allBullet.size();}
     
     void clear();
+    Sprite* add(Sprite *p);
     
     Bullet* getBullet(const QString& name);
     Bullet* addBullet(const QString& name);

@@ -16,8 +16,9 @@ Character::Character(const QString &worldName,const QString &name,GraphicsView* 
     vx=0;
     vy=0;
     oldVx=0;
-    stable=false;
+    stable=true;
     type=NPC;
+    outOfScene=false;
 
     read(worldName,name);
     Restore* restore=new Restore(this,0);
@@ -37,6 +38,7 @@ Character* Character::clone()
 {
     Character* p=new Character;
     p->setZValue(zValue());
+    p->setOutOfScene(this->isOutOfScene());
 
     p->setWeight(weight);
 
@@ -57,6 +59,7 @@ Character* Character::clone()
     p->setOldVx(oldVx);
     p->setStable(stable);
     p->setType(type);
+    p->setName(name);
 
     Restore* restore=new Restore(p,0);
     p->getSkillBox().push_back(restore);

@@ -45,6 +45,7 @@ Bullet* Bullet::clone()
     p->getSkillBox().push_back(restore);
     p->setVx(0);
     p->setVy(0);
+    p->setName(name);
 
     return p;
 }

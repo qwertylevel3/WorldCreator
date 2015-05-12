@@ -6,12 +6,14 @@
 #include<character/character.h>
 #include<QList>
 #include<QMap>
+#include"manager.h"
 
 class Player;
 
 
-class CharacterManager: public Singleton<CharacterManager>
+class CharacterManager:public QObject,public Manager,public Singleton<CharacterManager>
 {
+    Q_OBJECT
 public:
     CharacterManager();
     ~CharacterManager();
@@ -23,10 +25,16 @@ public:
     int getTotalNumber(){return allCharacter.size();}
     Character* addCharacter(const QString& name);
     Player* addPlayer(Player* p);
+    Sprite* add(Sprite *p);
+    QMap<QString,Character*>& getPrototype(){return prototype;}
+signals:
+    void selected(Sprite* s);
 protected:
     QList<Character*> allCharacter;
     QGraphicsScene* scene;
     QMap<QString,Character*> prototype;
 };
+
+
 
 #endif // CHARACTERMANAGER_H

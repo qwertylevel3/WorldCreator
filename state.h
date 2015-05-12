@@ -53,7 +53,7 @@ public:
     int getPixmapHeight(){return frameBox[currFrame].pixmap.height();}
     int getPixmapWidth(){return frameBox[currFrame].pixmap.width();}
 
-    QPixmap& getPixmap(){return frameBox[currFrame].pixmap;}
+    QPixmap getPixmap(){return frameBox[currFrame].pixmap;}
 
     QVector<QRectF>& getRects();
 

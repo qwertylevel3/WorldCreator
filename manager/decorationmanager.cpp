@@ -2,6 +2,8 @@
 #include<QDir>
 #include<QDebug>
 
+
+
 DecorationManager::DecorationManager()
 {
 
@@ -9,7 +11,7 @@ DecorationManager::DecorationManager()
 
 DecorationManager::~DecorationManager()
 {
-
+    delete p;
 }
 
 void DecorationManager::init(QGraphicsScene* s, QString &worldName)
@@ -54,13 +56,28 @@ void DecorationManager::update()
     for(int i=0;i<allDecoration.size();i++)
     {
         allDecoration[i]->update();
+        if(allDecoration[i]->isSelected())
+        {
+            emit selected(allDecoration[i]);
+        }
+        if(allDecoration[i]->scene()==0)
+        {
+            allDecoration.removeAt(i);
+        }
     }
+
+}
+
+Sprite *DecorationManager::add(Sprite *p)
+{
+    return addDecoration(p->getName());
 }
 
 Decoration *DecorationManager::addDecoration(const QString& name)
 {
     Decoration* d=prototype[name]->clone();
     allDecoration.push_back(d);
+    d->setManager(this);
     scene->addItem(d);
     return d;
 }

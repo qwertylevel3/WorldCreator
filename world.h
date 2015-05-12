@@ -3,6 +3,9 @@
 
 #include"game.h"
 #include<QObject>
+#include<QTextStream>
+
+class Mission;
 
 class World:public QObject
 {
@@ -10,19 +13,66 @@ class World:public QObject
 public:
     World();
     ~World();
+    QGraphicsScene* getScene(){return scene;}
+    GraphicsView* getView(){return view;}
+    bool showGrid();
+    bool writeFile(const QString &fileName);
+    bool createNewWorld(const QString fileName);
+    bool loadFile(const QString fileName);
+    void newMission(const QString& missionName);
+
+    bool init(const QString& worldName);
+    void clear(){}
+
+    double getG(){return G;}
+    double getT(){return T;}
+    bool loadWorld(const QString& worldName);
+    bool loadTerrain(QTextStream& in);
+    bool loadCharacter(QTextStream& in);
+    bool loadDecoration(QTextStream& in);
+
+    bool writeTerrain(QTextStream& out);
+    bool writeCharacter(QTextStream& out);
+    bool writeDecoration(QTextStream& out);
+
+    QString getWorldName(){return worldName;}
 public slots:
     void cut();
     void copy();
+    void close();
     void paste();
     void del();
+    void addSpriteFromPanel(Sprite* p);
+    void setShowGrid(bool s){}
+    void update();
+    void setTerrainDragable(bool d);
+    void setCharacterDragable(bool d);
+    void setDecorationDragable(bool d);
 signals:
     void modified();
 protected slots:
-    void somethingChanged(){}
+    void somethingChanged();
+    void getSelected(Sprite* p);
 protected:
+    QString worldName;
     QGraphicsScene* scene;
     GraphicsView* view;
     Sprite* currSprite;
+    Sprite* spriteInClipboard;
+    QTimer* timer;
+    bool doSimulate;
+
+    //模拟环境
+    void simulation();
+
+    bool isCollision(Sprite* a,Sprite* b);
+
+    bool showRects;//显示碰撞矩形
+
+    double G;//重力加速度
+    double T;//单帧时间间隔
+
+    int misssionNumber;//关卡总数
 
 };
 
