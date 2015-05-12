@@ -82,7 +82,7 @@ private:
     QAction* closeAction;
 
 
-
+    QAction* simulateGravity;
     QAction *showGridAction;
     QAction *aboutAction;
     QAction *aboutQtAction;

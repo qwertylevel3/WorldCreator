@@ -17,6 +17,8 @@ public slots:
     virtual void add(){}
     virtual void update(){}
     virtual void clear(){}
+signals:
+    void addSprite();
 protected:
     QListWidget* listWidget;
     QPushButton* addButton;

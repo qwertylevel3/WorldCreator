@@ -42,6 +42,10 @@ MainWindow::MainWindow(QWidget *parent):
     setCurrentFile("");
 
     connect(world,SIGNAL(modified()),this,SLOT(worldModified()));
+    connect(terrainWidget,SIGNAL(addSprite()),this,SLOT(worldModified()));
+    connect(characterWidget,SIGNAL(addSprite()),this,SLOT(worldModified()));
+    connect(decorationWidget,SIGNAL(addSprite()),this,SLOT(worldModified()));
+
 }
 
 
@@ -65,7 +69,6 @@ void MainWindow::newWorld()
 {
     if (okToContinue()) {
         world->clear();
-
 
         bool ok;
         QString fileName = QInputDialog::getText(this, tr("create new world"),
@@ -228,6 +231,15 @@ void MainWindow::createActions()
     connect(showGridAction, SIGNAL(toggled(bool)),
             world, SLOT(setShowGrid(bool)));
 
+    simulateGravity = new QAction(tr("&Simulate Gravity"), this);
+    simulateGravity->setCheckable(true);
+    simulateGravity->setChecked(world->getSimulateGravity());
+    simulateGravity->setStatusTip(tr("Switch simulate gravity on or "
+                                      "off"));
+    connect(simulateGravity, SIGNAL(toggled(bool)),
+            world, SLOT(setSimulateGravity(bool)));
+
+
 
     aboutAction = new QAction(tr("&About"), this);
     aboutAction->setStatusTip(tr("Show the application's About box"));
@@ -268,8 +280,7 @@ void MainWindow::createMenus()
     moduleMenu = menuBar()->addMenu(tr("Module(&M)"));
 
     optionsMenu = menuBar()->addMenu(tr("Options(&O)"));
-    //optionsMenu->addAction(showGridAction);
-    //optionsMenu->addAction(autoRecalcAction);
+    optionsMenu->addAction(simulateGravity);
 
 
 
@@ -352,14 +363,6 @@ void MainWindow::readSettings()
     recentFiles = settings.value("recentFiles").toStringList();
     settings.endGroup();
     updateRecentFileActions();
-
-
-
-//    bool showGrid = settings.value("showGrid", true).toBool();
-//    showGridAction->setChecked(showGrid);
-
-//    bool autoRecalc = settings.value("autoRecalc", true).toBool();
-//    autoRecalcAction->setChecked(autoRecalc);
 }
 
 void MainWindow::writeSettings()
@@ -371,8 +374,6 @@ void MainWindow::writeSettings()
     settings.setValue("state",saveState());
     settings.setValue("recentFiles", recentFiles);
     settings.endGroup();
-//    settings.setValue("showGrid", showGridAction->isChecked());
-//    settings.setValue("autoRecalc", autoRecalcAction->isChecked());
 }
 
 bool MainWindow::okToContinue()

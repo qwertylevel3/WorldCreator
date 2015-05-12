@@ -26,6 +26,7 @@ public:
 
     double getG(){return G;}
     double getT(){return T;}
+    bool getSimulateGravity(){return doSimulate;}
     bool loadWorld(const QString& worldName);
     bool loadTerrain(QTextStream& in);
     bool loadCharacter(QTextStream& in);
@@ -44,6 +45,7 @@ public slots:
     void del();
     void addSpriteFromPanel(Sprite* p);
     void setShowGrid(bool s){}
+    void setSimulateGravity(bool s);
     void update();
     void setTerrainDragable(bool d);
     void setCharacterDragable(bool d);

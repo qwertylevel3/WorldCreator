@@ -68,6 +68,10 @@ void CharacterManager::update()
             allCharacter[i]->setVx(0);
             allCharacter[i]->setVy(0);
         }
+        else
+        {
+            allCharacter[i]->setOutOfScene(false);
+        }
         if(allCharacter[i]->scene()==0)
         {
             allCharacter.removeAt(i);

@@ -91,6 +91,11 @@ void World::addSpriteFromPanel(Sprite *p)
     }
 }
 
+void World::setSimulateGravity(bool s)
+{
+    doSimulate=s;
+}
+
 void World::paste()
 {
     if(spriteInClipboard)

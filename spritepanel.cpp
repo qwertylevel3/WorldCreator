@@ -56,6 +56,7 @@ void CharacterPanel::clear()
 void CharacterPanel::add()
 {
     CharacterManager::instance()->addCharacter(listWidget->currentItem()->data(Qt::UserRole).toString());
+    emit addSprite();
 }
 
 TerrainPanel::TerrainPanel(QWidget *parent)
@@ -94,6 +95,7 @@ void TerrainPanel::clear()
 void TerrainPanel::add()
 {
     TerrainManager::instance()->addTerrain(listWidget->currentItem()->data(Qt::UserRole).toString());
+    emit addSprite();
 }
 
 
@@ -133,6 +135,5 @@ void DecorationPanel::clear()
 void DecorationPanel::add()
 {
     DecorationManager::instance()->addDecoration(listWidget->currentItem()->data(Qt::UserRole).toString());
+    emit addSprite();
 }
-
-

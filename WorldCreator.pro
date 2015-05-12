@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     manager/missionmanager.cpp \
     mission.cpp \
     manager/manager.cpp \
-    spritepanel.cpp
+    spritepanel.cpp \
+    worlddescriptiondialog.cpp
 
 HEADERS  += mainwindow.h \
     frame.h \
@@ -72,9 +73,11 @@ HEADERS  += mainwindow.h \
     manager/missionmanager.h \
     mission.h \
     manager/manager.h \
-    spritepanel.h
+    spritepanel.h \
+    worlddescriptiondialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    worlddescriptiondialog.ui
 
 RESOURCES += \
     resource.qrc
