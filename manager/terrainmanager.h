@@ -24,6 +24,7 @@ public:
     Terrain* addTerrain(const QString& name);
     Sprite* add(Sprite *p);
     QMap<QString,Terrain*>& getPrototype(){return prototype;}
+    void setShowRect(bool s);
 signals:
     void selected(Sprite* p);
 protected:

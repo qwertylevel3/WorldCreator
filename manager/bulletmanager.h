@@ -25,6 +25,7 @@ public:
     
     Bullet* getBullet(const QString& name);
     Bullet* addBullet(const QString& name);
+    void setShowRect(bool s);
 protected:
     QList<Bullet*> allBullet;//scene中所有bullet
     QGraphicsScene* scene;

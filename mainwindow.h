@@ -85,7 +85,7 @@ private:
     QAction* spriteSettingAction;
     QAction* worldDescriptionAction;
 
-
+    QAction* showRect;
     QAction* characterSelectable;
     QAction* terrainSelectable;
     QAction* decorationSelectable;

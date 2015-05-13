@@ -73,6 +73,14 @@ Sprite* EffectManager::add(Sprite *p)
     return addEffect(p->getName());
 }
 
+void EffectManager::setShowRect(bool s)
+{
+    for(int i=0;i<allEffect.size();i++)
+    {
+        allEffect[i]->setShowRect(s);
+    }
+}
+
 Effect* EffectManager::addEffect(const QString &name)
 {
     Effect* e=prototype[name]->clone();

@@ -24,6 +24,7 @@ public:
     Effect* addEffect(const QString& name);
     void clear();
     Sprite* add(Sprite *p);
+    void setShowRect(bool s);
 protected:
     QList<Effect*> allEffect;
     QGraphicsScene* scene;

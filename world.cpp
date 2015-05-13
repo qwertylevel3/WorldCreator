@@ -172,6 +172,14 @@ void World::setDecorationDragable(bool d)
         DecorationManager::instance()->getAllDecoration()[i]->setDragable(d);
     }
 }
+
+void World::setShowRect(bool s)
+{
+    showRect=s;
+    DecorationManager::instance()->setShowRect(s);
+    CharacterManager::instance()->setShowRect(s);
+    TerrainManager::instance()->setShowRect(s);
+}
 bool World::showGrid()
 {
     return false;

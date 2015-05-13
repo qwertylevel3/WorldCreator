@@ -30,7 +30,9 @@ public:
     void setDragable(bool d);
     void setName(QString n){name=n;}
     void setManager(Manager* p){manager=p;}
+    void setShowRect(bool s){showRect=s;}
 
+    bool getShowRect(){return showRect;}
     Manager* getManager(){return manager;}
     QString getName(){return name;}
     int getOrientation(){return orientation;}
@@ -70,6 +72,7 @@ protected:
     int currState;
     int currSkill;
     int orientation;//朝向，1右，-1左
+    bool showRect;
 
     QList<State*> stateBox;
     QList<Skill*> skillBox;

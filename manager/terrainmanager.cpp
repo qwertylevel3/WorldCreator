@@ -53,6 +53,14 @@ Sprite *TerrainManager::add(Sprite *p)
     return addTerrain(p->getName());
 }
 
+void TerrainManager::setShowRect(bool s)
+{
+    for(int i=0;i<allTerrain.size();i++)
+    {
+        allTerrain[i]->setShowRect(s);
+    }
+}
+
 void TerrainManager::update()
 {
     for(int i=0;i<allTerrain.size();i++)

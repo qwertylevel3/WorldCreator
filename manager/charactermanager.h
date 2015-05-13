@@ -27,6 +27,7 @@ public:
     Player* addPlayer(Player* p);
     Sprite* add(Sprite *p);
     QMap<QString,Character*>& getPrototype(){return prototype;}
+    void setShowRect(bool s);
 signals:
     void selected(Sprite* s);
 protected:

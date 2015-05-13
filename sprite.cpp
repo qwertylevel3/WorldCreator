@@ -29,6 +29,7 @@ Sprite::Sprite(const QString &worldName, const QString &name, GraphicsView* rec,
     setViewReceiver(rec);
 
     dragable=true;
+    showRect=false;
 }
 Sprite::~Sprite()
 {
@@ -50,6 +51,7 @@ Sprite* Sprite::clone()
     p->setOrientation(1);
     p->setViewReceiver(receiver);
     p->setDragable(dragable);
+    p->setShowRect(showRect);
     return p;
 }
 
@@ -64,7 +66,7 @@ void Sprite::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     {
         painter->drawRect(boundingRect());
     }
-    stateBox[currState]->draw(painter,orientation,Game::instance()->getShowRects());
+    stateBox[currState]->draw(painter,orientation,showRect);
 }
 
 void Sprite::skillStart(int index)

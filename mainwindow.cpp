@@ -261,7 +261,11 @@ void MainWindow::createActions()
     decorationSelectable->setStatusTip(tr("Switch decoration selectable on or off"));
     connect(decorationSelectable,SIGNAL(toggled(bool)),world,SLOT(setDecorationDragable(bool)));
 
-
+    showRect=new QAction(tr("show collision rect"),this);
+    showRect->setCheckable(true);
+    showRect->setChecked(world->getShowRect());
+    showRect->setStatusTip(tr("Switch show collision rect"));
+    connect(showRect,SIGNAL(toggled(bool)),world,SLOT(setShowRect(bool)));
 
     spriteSettingAction=new QAction(tr("setting"),this);
     spriteSettingAction->setStatusTip(tr("open sprite setting panel"));
@@ -315,6 +319,7 @@ void MainWindow::createMenus()
     optionsMenu->addAction(characterSelectable);
     optionsMenu->addAction(decorationSelectable);
     optionsMenu->addAction(terrainSelectable);
+    optionsMenu->addAction(showRect);
 
 
 

@@ -84,6 +84,14 @@ Sprite *CharacterManager::add(Sprite *p)
     return addCharacter(p->getName());
 }
 
+void CharacterManager::setShowRect(bool s)
+{
+    for(int i=0;i<allCharacter.size();i++)
+    {
+        allCharacter[i]->setShowRect(s);
+    }
+}
+
 
 Character* CharacterManager::addCharacter(const QString& name)
 {

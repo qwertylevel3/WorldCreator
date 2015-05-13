@@ -73,6 +73,14 @@ Sprite *DecorationManager::add(Sprite *p)
     return addDecoration(p->getName());
 }
 
+void DecorationManager::setShowRect(bool s)
+{
+    for(int i=0;i<allDecoration.size();i++)
+    {
+        allDecoration[i]->setShowRect(s);
+    }
+}
+
 Decoration *DecorationManager::addDecoration(const QString& name)
 {
     Decoration* d=prototype[name]->clone();

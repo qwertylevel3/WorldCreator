@@ -30,6 +30,7 @@ public:
     bool getCharacterSelectable(){return characterSelectable;}
     bool getDecorationSelectable(){return decorationSelectable;}
     bool getTerrainSelectable(){return terrainSelectable;}
+    bool getShowRect(){return showRect;}
 
 
     bool loadWorld(const QString& worldName);
@@ -57,6 +58,7 @@ public slots:
     void setTerrainDragable(bool d);
     void setCharacterDragable(bool d);
     void setDecorationDragable(bool d);
+    void setShowRect(bool s);
 signals:
     void modified();
 protected slots:
@@ -79,7 +81,7 @@ protected:
 
     bool isCollision(Sprite* a,Sprite* b);
 
-    bool showRects;//显示碰撞矩形
+    bool showRect;//显示碰撞矩形
 
     double G;//重力加速度
     double T;//单帧时间间隔

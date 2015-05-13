@@ -25,6 +25,7 @@ public:
     void clear();
     Sprite* add(Sprite *p);
     QMap<QString,Decoration*>& getPrototype(){return prototype;}
+    void setShowRect(bool s);
 signals:
     void selected(Sprite* p);
 protected:

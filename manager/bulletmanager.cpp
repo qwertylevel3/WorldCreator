@@ -85,6 +85,14 @@ Bullet *BulletManager::addBullet(const QString &name)
     return b;
 }
 
+void BulletManager::setShowRect(bool s)
+{
+    for(int i=0;i<allBullet.size();i++)
+    {
+        allBullet[i]->setShowRect(s);
+    }
+}
+
 void BulletManager::clear()
 {
     for(QList<Bullet*>::iterator i=allBullet.begin();i<allBullet.end();i++)
