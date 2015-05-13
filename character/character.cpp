@@ -9,6 +9,7 @@
 #include<QDir>
 #include<QDebug>
 #include<QKeyEvent>
+#include"charactersettingdialog.h"
 
 Character::Character(const QString &worldName,const QString &name,GraphicsView* rec,QGraphicsItem * parent)
     :Sprite(worldName,name,rec,parent)
@@ -74,6 +75,12 @@ Character* Character::clone()
     p->getSkillBox().push_back(dead);
 
     return p;
+}
+
+void Character::setting()
+{
+    CharacterSettingDialog dialog;
+    dialog.exec();
 }
 
 Character::~Character()

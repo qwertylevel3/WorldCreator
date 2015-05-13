@@ -51,6 +51,7 @@ public:
     virtual void skillStart(int index);
     virtual void skillEnd(int index);
     virtual void skillRun(int index);
+    virtual void setting();
 public slots:
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
     QRectF boundingRect() const;

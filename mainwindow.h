@@ -21,6 +21,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void contextMenuEvent(QContextMenuEvent *event);
 private:
     Ui::MainWindow *ui;
     World* world;
@@ -68,6 +69,7 @@ private:
     QMenu* windowMenu;
     QMenu *optionsMenu;
     QMenu *helpMenu;
+    QMenu* contextMenu;
 
     QToolBar* fileToolBar;
     QToolBar* editToolBar;
@@ -80,8 +82,13 @@ private:
     QAction* deleteAction;
     QAction* copyAction;
     QAction* closeAction;
+    QAction* spriteSettingAction;
+    QAction* worldDescriptionAction;
 
 
+    QAction* characterSelectable;
+    QAction* terrainSelectable;
+    QAction* decorationSelectable;
     QAction* simulateGravity;
     QAction *showGridAction;
     QAction *aboutAction;
@@ -90,7 +97,7 @@ private slots:
     void worldModified();
     void newWorld();
     void open();
-    void close();
+    void closeWorld();
     bool save();
     void about();
     void openRecentFile();

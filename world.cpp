@@ -11,6 +11,7 @@
 #include<QDir>
 #include<QMessageBox>
 #include"mission.h"
+#include"worlddescriptiondialog.h"
 
 World::World()
 {
@@ -101,7 +102,11 @@ void World::paste()
     if(spriteInClipboard)
     {
         Sprite* p=spriteInClipboard->getManager()->add(spriteInClipboard);
-        //p->setPos();
+//        qDebug()<<QCursor::pos()<<endl;
+//        qDebug()<<view->mapToScene(QCursor::pos())<<endl;
+//        p->setPos(view->mapToScene(QCursor::pos()).x()-p->getPixmap().size().width()/4
+//                  ,view->mapToScene(QCursor::pos()).y()-p->getPixmap().size().height()/2);
+        p->setPos(view->mapToScene(QCursor::pos()));
         view->centerOn(p);
         somethingChanged();
     }
@@ -523,6 +528,20 @@ bool World::writeDecoration(QTextStream &out)
 
     }
     return true;
+}
+
+void World::worldDescription()
+{
+    WorldDescriptionDialog dialog;
+    dialog.exec();
+}
+
+void World::spriteSetting()
+{
+    if(currSprite)
+    {
+        currSprite->setting();
+    }
 }
 
 

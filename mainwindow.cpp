@@ -54,6 +54,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+     contextMenu->exec(QCursor::pos());
+}
+
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -81,7 +86,6 @@ void MainWindow::newWorld()
             setCurrentFile(world->getWorldName());
             updateDockWindow();
         }
-
     }
 }
 
@@ -102,7 +106,7 @@ void MainWindow::open()
 
 }
 
-void MainWindow::close()
+void MainWindow::closeWorld()
 {
     if(okToContinue())
     {
@@ -180,7 +184,7 @@ void MainWindow::createActions()
 
     closeAction=new QAction(tr("Close"),this);
     closeAction->setStatusTip(tr("close the world"));
-    connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
+    connect(closeAction,SIGNAL(triggered()),this,SLOT(closeWorld()));
 
     for (int i = 0; i < MaxRecentFiles; ++i) {
         recentFileActions[i] = new QAction(this);
@@ -239,7 +243,33 @@ void MainWindow::createActions()
     connect(simulateGravity, SIGNAL(toggled(bool)),
             world, SLOT(setSimulateGravity(bool)));
 
+    characterSelectable=new QAction(tr("set character selectable"),this);
+    characterSelectable->setCheckable(true);
+    characterSelectable->setChecked(world->getCharacterSelectable());
+    characterSelectable->setStatusTip(tr("Switch character selectable on or off"));
+    connect(characterSelectable,SIGNAL(toggled(bool)),world,SLOT(setCharacterDragable(bool)));
 
+    terrainSelectable=new QAction(tr("set terrain selectable"),this);
+    terrainSelectable->setCheckable(true);
+    terrainSelectable->setChecked(world->getTerrainSelectable());
+    terrainSelectable->setStatusTip(tr("Switch terrain selectable on or off"));
+    connect(terrainSelectable,SIGNAL(toggled(bool)),world,SLOT(setTerrainDragable(bool)));
+
+    decorationSelectable=new QAction(tr("set decoration selectable"),this);
+    decorationSelectable->setCheckable(true);
+    decorationSelectable->setChecked(world->getDecorationSelectable());
+    decorationSelectable->setStatusTip(tr("Switch decoration selectable on or off"));
+    connect(decorationSelectable,SIGNAL(toggled(bool)),world,SLOT(setDecorationDragable(bool)));
+
+
+
+    spriteSettingAction=new QAction(tr("setting"),this);
+    spriteSettingAction->setStatusTip(tr("open sprite setting panel"));
+    connect(spriteSettingAction,SIGNAL(triggered()),world,SLOT(spriteSetting()));
+
+    worldDescriptionAction=new QAction(tr("world description"),this);
+    worldDescriptionAction->setStatusTip(tr("set the world description"));
+    connect(worldDescriptionAction,SIGNAL(triggered()),world,SLOT(worldDescription()));
 
     aboutAction = new QAction(tr("&About"), this);
     aboutAction->setStatusTip(tr("Show the application's About box"));
@@ -275,12 +305,16 @@ void MainWindow::createMenus()
 //    editMenu->addAction(goToCellAction);
 
     propertyMenu = menuBar()->addMenu(tr("Property(&P)"));
+    propertyMenu->addAction(worldDescriptionAction);
 //    toolsMenu->addAction(recalculateAction);
 //    toolsMenu->addAction(sortAction);
     moduleMenu = menuBar()->addMenu(tr("Module(&M)"));
 
     optionsMenu = menuBar()->addMenu(tr("Options(&O)"));
     optionsMenu->addAction(simulateGravity);
+    optionsMenu->addAction(characterSelectable);
+    optionsMenu->addAction(decorationSelectable);
+    optionsMenu->addAction(terrainSelectable);
 
 
 
@@ -289,6 +323,13 @@ void MainWindow::createMenus()
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(aboutAction);
     helpMenu->addAction(aboutQtAction);
+
+    contextMenu=new QMenu(this);
+    contextMenu->addAction(cutAction);
+    contextMenu->addAction(copyAction);
+    contextMenu->addAction(pasteAction);
+    contextMenu->addSeparator();
+    contextMenu->addAction(spriteSettingAction);
 }
 
 void MainWindow::createContextMenu()

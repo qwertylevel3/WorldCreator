@@ -118,6 +118,11 @@ void Sprite::skillRun(int index)
     }
 }
 
+void Sprite::setting()
+{
+
+}
+
 void Sprite::setViewReceiver(GraphicsView *rec)
 {
     if(rec)
@@ -155,6 +160,7 @@ void Sprite::setDragable(bool d)
 {
     setFlag(QGraphicsItem::ItemIsMovable, d);
     setFlag(QGraphicsItem::ItemIsSelectable, d);
+    dragable=d;
 }
 
 void Sprite::mousePressEvent(QGraphicsSceneMouseEvent *event)

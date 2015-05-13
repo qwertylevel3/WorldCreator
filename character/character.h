@@ -14,6 +14,8 @@ public:
     bool read(const QString &worldName, const QString &name);
     Character* clone();
 
+    void setting();
+
     void skillEnd(int index);
     void skillRun(int index);
 

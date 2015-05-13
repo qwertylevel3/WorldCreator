@@ -27,6 +27,11 @@ public:
     double getG(){return G;}
     double getT(){return T;}
     bool getSimulateGravity(){return doSimulate;}
+    bool getCharacterSelectable(){return characterSelectable;}
+    bool getDecorationSelectable(){return decorationSelectable;}
+    bool getTerrainSelectable(){return terrainSelectable;}
+
+
     bool loadWorld(const QString& worldName);
     bool loadTerrain(QTextStream& in);
     bool loadCharacter(QTextStream& in);
@@ -38,6 +43,8 @@ public:
 
     QString getWorldName(){return worldName;}
 public slots:
+    void worldDescription();
+    void spriteSetting();
     void cut();
     void copy();
     void close();
@@ -63,6 +70,9 @@ protected:
     Sprite* spriteInClipboard;
     QTimer* timer;
     bool doSimulate;
+    bool characterSelectable;
+    bool terrainSelectable;
+    bool decorationSelectable;
 
     //模拟环境
     void simulation();
