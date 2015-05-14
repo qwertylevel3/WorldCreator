@@ -23,6 +23,7 @@ Effect* Effect::clone()
     p->setOrientation(1);
     p->setDragable(isDragable());
     p->setName(name);
+    p->setStateTotal(stateTotal);
 
     for(int i=0;i<stateTotal;i++)
     {

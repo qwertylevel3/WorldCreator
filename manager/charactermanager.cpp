@@ -81,7 +81,11 @@ void CharacterManager::update()
 
 Sprite *CharacterManager::add(Sprite *p)
 {
-    return addCharacter(p->getName());
+    Character* c=qobject_cast<Character*>(p->clone());
+    c->setManager(this);
+    scene->addItem(c);
+    allCharacter.push_back(c);
+    return c;
 }
 
 void CharacterManager::setShowRect(bool s)

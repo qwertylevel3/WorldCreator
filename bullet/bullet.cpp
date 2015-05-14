@@ -33,6 +33,7 @@ Bullet* Bullet::clone()
     p->setCurrSkill(0);
     p->setOrientation(1);
     p->setDragable(isDragable());
+    p->setStateTotal(stateTotal);
     
     for(int i=0;i<stateBox.size();i++)
     {

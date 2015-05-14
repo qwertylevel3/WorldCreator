@@ -16,21 +16,26 @@ Sprite::Sprite(const QString &worldName, const QString &name, GraphicsView* rec,
     :QGraphicsObject(parent)
 {
     this->name=name;
-    setZValue(5);
     read(worldName,name);
+    setViewReceiver(rec);
+    dragable=true;
+    showRect=false;
+    init();
 
-    //setTransformOriginPoint(boundingRect().center());
+}
+
+void Sprite::init()
+{
+    setZValue(5);
 
     currState=0;
     currSkill=0;
 
     orientation=1;
 
-    setViewReceiver(rec);
 
-    dragable=true;
-    showRect=false;
 }
+
 Sprite::~Sprite()
 {
     for(int i=0;i<stateTotal;i++)
@@ -43,15 +48,12 @@ Sprite::~Sprite()
 Sprite* Sprite::clone()
 {
     Sprite* p=new Sprite;
-    p->setZValue(5);
     p->setName(name);
-    //setTransformOriginPoint(boundingRect().center());
-    p->setCurrState(0);
-    p->setCurrSkill(0);
-    p->setOrientation(1);
     p->setViewReceiver(receiver);
+    p->init();
     p->setDragable(dragable);
     p->setShowRect(showRect);
+
     return p;
 }
 
@@ -125,11 +127,27 @@ void Sprite::setting()
 
 }
 
+//name在构建实例时唯一确定，无需读入
+void Sprite::readFromStream(QTextStream &in)
+{
+    double x,y,z;
+    in>>x>>y>>z;
+    setPos(x,y);
+    setZValue(z);
+
+}
+
+void Sprite::writeToStream(QTextStream &out)
+{
+    out<<name<<endl;
+    out<<pos().x()<<" "<<pos().y()<<" "<<zValue()<<endl;
+}
+
 void Sprite::setViewReceiver(GraphicsView *rec)
 {
+    receiver=rec;
     if(rec)
     {
-        receiver=rec;
         connect(receiver,SIGNAL(keyPressed(QKeyEvent*)),this,SLOT(keyPressEvent(QKeyEvent*)));
         connect(receiver,SIGNAL(keyReleased(QKeyEvent*)),this,SLOT(keyReleaseEvent(QKeyEvent*)));
     }

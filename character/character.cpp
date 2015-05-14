@@ -11,17 +11,57 @@
 #include<QKeyEvent>
 #include"charactersettingdialog.h"
 
-Character::Character(const QString &worldName,const QString &name,GraphicsView* rec,QGraphicsItem * parent)
-    :Sprite(worldName,name,rec,parent)
+QString Character::Type2QString(Character::Type t)
 {
+    if(t==NPC)
+    {
+        return QString("NPC");
+    }
+    else if(t==Enemy)
+    {
+        return QString("Enemy");
+    }
+    else if(t==Player)
+    {
+        return QString("Player");
+    }
+    else
+    {
+        qDebug()<<"error to read type"<<endl;
+        return QString("error");
+    }
+}
+
+Character::Type Character::QString2Type(QString s)
+{
+    if(s=="NPC")
+    {
+        return NPC;
+    }
+    else if(s=="Enemy")
+    {
+        return Enemy;
+    }
+    else if(s=="Player")
+    {
+        return Player;
+    }
+    else
+    {
+        qDebug()<<"error to read QString"<<endl;
+        return NPC;
+    }
+}
+
+void Character::init()
+{
+    Sprite::init();
     vx=0;
     vy=0;
     oldVx=0;
     stable=true;
-    type=NPC;
     outOfScene=false;
 
-    read(worldName,name);
     Restore* restore=new Restore(this,0);
     skillBox.push_back(restore);
 
@@ -33,20 +73,33 @@ Character::Character(const QString &worldName,const QString &name,GraphicsView* 
 
     Dead* dead=new Dead(this,3);
     skillBox.push_back(dead);
+
+    HP=100;
+    MP=100;
+    HPMax=100;
+    MPMax=100;
+    weight=5;
+    type=NPC;
+}
+
+Character::Character(const QString &worldName,const QString &name,GraphicsView* rec,QGraphicsItem * parent)
+    :Sprite(worldName,name,rec,parent)
+{
+    read(worldName,name);
+    setName(name);
+    setViewReceiver(rec);
+    init();
 }
 
 Character* Character::clone()
 {
     Character* p=new Character;
-    p->setZValue(zValue());
-    p->setOutOfScene(this->isOutOfScene());
+    p->setName(name);
+    p->setViewReceiver(receiver);
+    p->setStateTotal(stateTotal);
+    p->setDragable(dragable);
+    p->setShowRect(showRect);
 
-    p->setWeight(weight);
-
-    p->setCurrState(0);
-    p->setCurrSkill(0);
-    p->setOrientation(1);
-    p->setDragable(isDragable());
 
     for(int i=0;i<stateTotal;i++)
     {
@@ -55,32 +108,32 @@ Character* Character::clone()
         p->getStateBox().push_back(state);
     }
 
-    p->setVx(vx);
-    p->setVy(vy);
-    p->setOldVx(oldVx);
-    p->setStable(stable);
+    p->init();
+
+    p->setZValue(zValue());
+    p->setWeight(weight);
+    p->setHP(HP);
+    p->setMP(MP);
+    p->setHPMax(HPMax);
+    p->setMPMax(MPMax);
     p->setType(type);
-    p->setName(name);
 
-    Restore* restore=new Restore(p,0);
-    p->getSkillBox().push_back(restore);
-
-    Move* move=new Move(p,1);
-    p->getSkillBox().push_back(move);
-
-    Jump* jump=new Jump(p,2);
-    p->getSkillBox().push_back(jump);
-
-    Dead* dead=new Dead(p,3);
-    p->getSkillBox().push_back(dead);
 
     return p;
 }
 
 void Character::setting()
 {
-    CharacterSettingDialog dialog;
-    dialog.exec();
+    CharacterSettingDialog dialog(this);
+    if(dialog.exec())
+    {
+        this->setType(dialog.getType());
+        this->setZValue(dialog.getZValue());
+        this->setHP(dialog.getHP());
+        this->setMP(dialog.getMP());
+        this->setHPMax(dialog.getMaxHP());
+        this->setMPMax(dialog.getMaxMP());
+    }
 }
 
 Character::~Character()
@@ -171,4 +224,25 @@ void Character::skillRun(int index)
             }
         }
     }
+}
+
+//读取可变信息
+void Character::readFromStream(QTextStream &in)
+{
+    Sprite::readFromStream(in);//读入坐标,z
+    QString s;
+    in>>s;
+    setType(QString2Type(s));
+    in>>weight;
+    in>>HPMax>>HP;
+    in>>MPMax>>MP;
+}
+//写可变信息
+void Character::writeToStream(QTextStream &out)
+{
+    Sprite::writeToStream(out);//写name,x,y,z
+    out<<Type2QString(type)<<endl;
+    out<<weight<<endl;
+    out<<HPMax<<" "<<HP<<endl;
+    out<<MPMax<<" "<<MP<<endl;
 }

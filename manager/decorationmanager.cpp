@@ -70,7 +70,11 @@ void DecorationManager::update()
 
 Sprite *DecorationManager::add(Sprite *p)
 {
-    return addDecoration(p->getName());
+    Decoration* d=qobject_cast<Decoration*>(p->clone());
+    allDecoration.push_back(d);
+    d->setManager(this);
+    scene->addItem(d);
+    return d;
 }
 
 void DecorationManager::setShowRect(bool s)

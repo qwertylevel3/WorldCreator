@@ -43,7 +43,9 @@ SOURCES += main.cpp\
     manager/manager.cpp \
     spritepanel.cpp \
     worlddescriptiondialog.cpp \
-    charactersettingdialog.cpp
+    charactersettingdialog.cpp \
+    terrainsettingdialog.cpp \
+    decorationsettingdialog.cpp
 
 HEADERS  += mainwindow.h \
     frame.h \
@@ -76,11 +78,15 @@ HEADERS  += mainwindow.h \
     manager/manager.h \
     spritepanel.h \
     worlddescriptiondialog.h \
-    charactersettingdialog.h
+    charactersettingdialog.h \
+    terrainsettingdialog.h \
+    decorationsettingdialog.h
 
 FORMS    += mainwindow.ui \
     worlddescriptiondialog.ui \
-    charactersettingdialog.ui
+    charactersettingdialog.ui \
+    terrainsettingdialog.ui \
+    decorationsettingdialog.ui
 
 RESOURCES += \
     resource.qrc

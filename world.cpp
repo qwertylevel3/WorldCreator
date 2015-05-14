@@ -28,16 +28,16 @@ World::World()
 
     doSimulate=false;
 
-    connect(CharacterManager::instance(),SIGNAL(selected(Sprite*)),this,SLOT(getSelected(Sprite*)));
-    connect(TerrainManager::instance(),SIGNAL(selected(Sprite*)),this,SLOT(getSelected(Sprite*)));
-    connect(DecorationManager::instance(),SIGNAL(selected(Sprite*)),this,SLOT(getSelected(Sprite*)));
+    connect(CharacterManager::instance(),SIGNAL(selected(Sprite*)),this,SLOT(setSelected(Sprite*)));
+    connect(TerrainManager::instance(),SIGNAL(selected(Sprite*)),this,SLOT(setSelected(Sprite*)));
+    connect(DecorationManager::instance(),SIGNAL(selected(Sprite*)),this,SLOT(setSelected(Sprite*)));
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start(25);
 }
 
-void World::getSelected(Sprite *p)
+void World::setSelected(Sprite *p)
 {
     currSprite=p;
 }
@@ -357,11 +357,6 @@ bool World::loadFile(const QString fileName)
     return true;
 }
 
-void World::newMission(const QString &missionName)
-{
-
-}
-
 bool World::loadWorld(const QString& worldName)
 {
     QString path=QDir::currentPath()
@@ -416,9 +411,7 @@ bool World::loadTerrain(QTextStream& in)
         QString name;
         in>>name;
         Terrain* t=TerrainManager::instance()->addTerrain(name);
-        int x,y;
-        in>>x>>y;
-        t->setPos(x,y);
+        t->readFromStream(in);
     }
     return true;
 }
@@ -432,27 +425,7 @@ bool World::loadCharacter(QTextStream& in)
         QString name;
         in>>name;
         Character* c=CharacterManager::instance()->addCharacter(name);
-        QString type;
-        in>>type;
-        if(type=="Enemy")
-        {
-            c->setType(Character::Enemy);
-        }
-        else if(type=="NPC")
-        {
-            c->setType(Character::NPC);
-        }
-        else if(type=="Player")
-        {
-            qDebug()<<"error to add player"<<endl;
-        }
-        else
-        {
-            qDebug()<<"unknow type"<<endl;
-        }
-        int x,y;
-        in>>x>>y;
-        c->setPos(x,y);
+        c->readFromStream(in);
     }
     return true;
 }
@@ -466,9 +439,7 @@ bool World::loadDecoration(QTextStream& in)
         QString name;
         in>>name;
         Decoration* d=DecorationManager::instance()->addDecoration(name);
-        int x,y;
-        in>>x>>y;
-        d->setPos(x,y);
+        d->readFromStream(in);
     }
     return true;
 }
@@ -479,11 +450,7 @@ bool World::writeTerrain(QTextStream &out)
     out<<num<<endl;
     for(int i=0;i<num;i++)
     {
-        QString name=TerrainManager::instance()->getAllTerrain()[i]->getName();
-        out<<name<<endl;
-        QPointF p=TerrainManager::instance()->getAllTerrain()[i]->pos();
-        out<<int(p.x())<<" "<<int(p.y())<<endl;
-
+        TerrainManager::instance()->getAllTerrain()[i]->writeToStream(out);
     }
     return true;
 }
@@ -494,31 +461,7 @@ bool World::writeCharacter(QTextStream &out)
     out<<num<<endl;
     for(int i=0;i<num;i++)
     {
-        QString name=CharacterManager::instance()->getAllCharacter()[i]->getName();
-        out<<name<<endl;
-
-        Character::Type t=CharacterManager::instance()->getAllCharacter()[i]->getType();
-
-        if(t==Character::Enemy)
-        {
-            out<<"Enemy"<<endl;
-        }
-        else if(t==Character::NPC)
-        {
-            out<<"NPC"<<endl;
-        }
-        else if(t==Character::Player)
-        {
-            out<<"Player"<<endl;
-        }
-        else
-        {
-            return false;
-        }
-
-        QPointF p=CharacterManager::instance()->getAllCharacter()[i]->pos();
-        out<<int(p.x())<<" "<<int(p.y())<<endl;
-
+        CharacterManager::instance()->getAllCharacter()[i]->writeToStream(out);
     }
     return true;
 }
@@ -529,11 +472,7 @@ bool World::writeDecoration(QTextStream &out)
     out<<num<<endl;
     for(int i=0;i<num;i++)
     {
-        QString name=DecorationManager::instance()->getAllDecoration()[i]->getName();
-        out<<name<<endl;
-        QPointF p=DecorationManager::instance()->getAllDecoration()[i]->pos();
-        out<<int(p.x())<<" "<<int(p.y())<<endl;
-
+        DecorationManager::instance()->getAllDecoration()[i]->writeToStream(out);
     }
     return true;
 }

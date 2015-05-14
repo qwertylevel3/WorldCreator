@@ -50,7 +50,11 @@ bool TerrainManager::read(QString &worldName)
 
 Sprite *TerrainManager::add(Sprite *p)
 {
-    return addTerrain(p->getName());
+    Terrain* t=qobject_cast<Terrain*>(p->clone());
+    allTerrain.push_back(t);
+    t->setManager(this);
+    scene->addItem(t);
+    return t;
 }
 
 void TerrainManager::setShowRect(bool s)

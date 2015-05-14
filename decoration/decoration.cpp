@@ -3,6 +3,7 @@
 #include<QDir>
 #include<QTextStream>
 #include<QDebug>
+#include"decorationsettingdialog.h"
 
 Decoration::Decoration(const QString &worldName,const QString &name,GraphicsView* rec,QGraphicsItem * parent)
     :Sprite(worldName,name,rec,parent)
@@ -26,8 +27,10 @@ Decoration* Decoration::clone()
     p->setCurrState(0);
     p->setCurrSkill(0);
     p->setOrientation(1);
-    p->setDragable(isDragable());
     p->setName(name);
+    p->setStateTotal(stateTotal);
+    p->setDragable(dragable);
+    p->setShowRect(showRect);
 
     for(int i=0;i<stateTotal;i++)
     {
@@ -39,6 +42,15 @@ Decoration* Decoration::clone()
     p->getSkillBox().push_back(restore);
 
     return p;
+}
+
+void Decoration::setting()
+{
+    DecorationSettingDialog dialog(this);
+    if(dialog.exec())
+    {
+        this->setZValue(dialog.getZValue());
+    }
 }
 
 bool Decoration::read(const QString &worldName, const QString &name)

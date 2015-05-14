@@ -19,7 +19,6 @@ public:
     bool writeFile(const QString &fileName);
     bool createNewWorld(const QString fileName);
     bool loadFile(const QString fileName);
-    void newMission(const QString& missionName);
 
     bool init(const QString& worldName);
     void clear(){}
@@ -63,7 +62,7 @@ signals:
     void modified();
 protected slots:
     void somethingChanged();
-    void getSelected(Sprite* p);
+    void setSelected(Sprite* p);
 protected:
     QString worldName;
     QGraphicsScene* scene;

@@ -4,6 +4,7 @@
 #include<QDir>
 #include<QTextStream>
 #include<QDebug>
+#include"terrainsettingdialog.h"
 
 Terrain::Terrain(const QString &worldName,const QString &name,GraphicsView* rec,QGraphicsItem * parent)
     :Sprite(worldName,name,rec,parent)
@@ -27,8 +28,10 @@ Terrain* Terrain::clone()
     p->setCurrState(0);
     p->setCurrSkill(0);
     p->setOrientation(1);
-    p->setDragable(isDragable());
     p->setName(name);
+    p->setStateTotal(stateTotal);
+    p->setDragable(dragable);
+    p->setShowRect(showRect);
 
     for(int i=0;i<stateTotal;i++)
     {
@@ -40,6 +43,15 @@ Terrain* Terrain::clone()
     p->getSkillBox().push_back(restore);
 
     return p;
+}
+
+void Terrain::setting()
+{
+    TerrainSettingDialog dialog(this);
+    if(dialog.exec())
+    {
+        this->setZValue(dialog.getZValue());
+    }
 }
 
 bool Terrain::read(const QString &worldName, const QString &name)

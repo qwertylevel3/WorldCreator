@@ -5,6 +5,7 @@
 #include<QVector>
 #include<QMap>
 #include"state.h"
+#include<QTextStream>
 
 class Skill;
 class GraphicsView;
@@ -31,7 +32,9 @@ public:
     void setName(QString n){name=n;}
     void setManager(Manager* p){manager=p;}
     void setShowRect(bool s){showRect=s;}
+    void setStateTotal(int t){stateTotal=t;}
 
+    int getStateTotal(){return stateTotal;}
     bool getShowRect(){return showRect;}
     Manager* getManager(){return manager;}
     QString getName(){return name;}
@@ -54,6 +57,9 @@ public:
     virtual void skillEnd(int index);
     virtual void skillRun(int index);
     virtual void setting();
+    virtual void readFromStream(QTextStream& in);
+    virtual void writeToStream(QTextStream& out);
+    virtual void init();
 public slots:
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
     QRectF boundingRect() const;
